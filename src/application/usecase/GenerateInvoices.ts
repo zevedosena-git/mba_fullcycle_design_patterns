@@ -1,20 +1,27 @@
-import ContractDatabaseRepository from "../../infra/repository/ContractDatabaseRepository";
+// Requisito 5: saíram daqui o repositório concreto não usado, o JsonPresenter e o Mediator
+// concreto que eram default do construtor. As portas entram por injeção.
+// Requisito 3: a factory substitui o presenter fixo para o format do input passar a valer.
+// Este caso de uso continua só simulando: calcula, publica InvoicesGenerated e não grava.
 import ContractRepository from "../repository/ContractRepository";
-import Presenter from "../presenter/Presenter";
-import JsonPresenter from "../../infra/presenter/JsonPresenter";
+import Mediator from "../mediator/Mediator";
+import PresenterFactory from "../presenter/PresenterFactory";
+import { Output } from "../presenter/Presenter";
 import Usecase from "./Usecase";
-import Mediator from "../../infra/mediator/Mediator";
+
+export type { Output };
 
 export default class GenerateInvoices implements Usecase {
 
 	constructor (
-		readonly contractRepository: ContractRepository, 
-		readonly presenter: Presenter = new JsonPresenter(),
-		readonly mediator: Mediator = new Mediator()
+		readonly contractRepository: ContractRepository,
+		readonly presenterFactory: PresenterFactory,
+		readonly mediator: Mediator
 	) {
 	}
 
 	async execute (input: Input): Promise<any> {
+		// Requisito 3: format ausente resolve JSON. "csv" deixa de ser ignorado.
+		const presenter = this.presenterFactory.create(input.format);
 		const output: Output[] = [];
 		const contracts = await this.contractRepository.list();
 		for (const contract of contracts) {
@@ -24,7 +31,7 @@ export default class GenerateInvoices implements Usecase {
 			}
 		}
 		await this.mediator.publish("InvoicesGenerated", output);
-		return this.presenter.present(output);
+		return presenter.present(output);
 	}
 }
 
@@ -33,9 +40,4 @@ type Input = {
 	year: number,
 	type: string,
 	format?: string
-}
-
-export type Output = {
-	date: Date,
-	amount: number
 }
