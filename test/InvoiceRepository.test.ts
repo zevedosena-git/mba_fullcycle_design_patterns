@@ -1,4 +1,3 @@
-// Requisito 4: listByPeriod ordena por date. Requisito 2: replacePeriod substitui o período.
 import InvoiceDatabaseRepository from "../src/infra/repository/InvoiceDatabaseRepository";
 import PgPromiseAdapter from "../src/infra/database/PgPromiseAdapter";
 

@@ -1,5 +1,3 @@
-// Requisito 4: devolve as faturas persistidas do período. Não há SQL neste caso de uso;
-// a leitura passa pelo repositório e o format pela mesma factory dos outros endpoints.
 import PresenterFactory from "../presenter/PresenterFactory";
 import InvoiceRepository from "../repository/InvoiceRepository";
 import Usecase from "./Usecase";

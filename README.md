@@ -2,7 +2,9 @@
 
 O `POST /generate_invoices` continua sendo a simulação: calcula as faturas e não grava. O `POST /close_invoicing` calcula o mesmo período e grava em `branas.invoice`. O `GET /invoices` lê o que foi fechado.
 
-A transação do fechamento vive em `InvoiceDatabaseRepository.replacePeriod`. Esse método abre uma única `transaction` na porta `DatabaseConnection`, implementada com `tx` do pg-promise: apaga as faturas daquele mês, ano e regime e insere as novas. Commit no fim; qualquer erro desfaz o lote inteiro. O teste `Deve desfazer o lote quando a segunda fatura viola a FK` fecha a competência de janeiro de 2022 e, em seguida, grava um lote cuja segunda inserção quebra a chave estrangeira. A fatura de 500 do fechamento anterior permanece, e nenhuma linha do lote que falhou fica no banco.
+A transação do fechamento vive em `InvoiceDatabaseRepository.replacePeriod`. Esse método abre uma única `transaction` na porta `DatabaseConnection`, implementada com `tx` do pg-promise: apaga as faturas daquele mês, ano e regime e insere as novas. Commit no fim; qualquer erro desfaz o lote inteiro. O teste `Deve desfazer o lote quando a segunda fatura viola a FK` (em `test/CloseInvoicing.test.ts`) fecha a competência de janeiro de 2022 e, em seguida, executa o `CloseInvoicing` com um repositório de contratos falso que devolve o contrato do seed e um contrato inexistente: a primeira inserção do lote passa e a segunda quebra a chave estrangeira. A fatura de 500 do fechamento anterior permanece, nenhuma linha do lote que falhou fica no banco e o evento `InvoicesClosed` não é publicado.
+
+O fechamento de ponta a ponta via HTTP está em `test/closeInvoicingApi.test.ts` e, como o `api.test.ts`, exige a API no ar. A suíte roda com `maxWorkers: 1` (em `jest.config.js`) porque vários testes fecham o mesmo período no mesmo banco.
 
 Se recriar o schema com a API no ar, reinicie a API antes de continuar. Um pool aberto antes do reseed pode pendurar as requisições.
 

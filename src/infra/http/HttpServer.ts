@@ -1,7 +1,5 @@
 export default interface HttpServer {
-	// Requisito 4: a query string é o quarto argumento, para o GET /invoices
-	// ler month, year, type e format sem o Express sair da infraestrutura.
-	// callback(params, body, headers, query)
+	// callback(params, body, headers, query): a query string chega como quarto argumento.
 	on (method: string, url: string, callback: Function): void;
 	listen (port: number): void;
 }

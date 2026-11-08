@@ -11,7 +11,6 @@ export default class ExpressAdapter implements HttpServer {
 
 	on(method: string, url: string, callback: Function): void {
 		this.app[method](url, async function (req: any, res: any) {
-			// Requisito 4: req.query entra na porta; o request do Express fica neste adapter.
 			const output = await callback(req.params, req.body, req.headers, req.query);
 			// CSV é string e sairia entre aspas se passasse por res.json. Objeto e array seguem JSON.
 			if (typeof output === "string") {

@@ -1,4 +1,3 @@
-// Requisito 3: o tipo passou a viver na porta. O present continua uma linha YYYY-MM-DD;amount por fatura.
 import Presenter, { Output } from "../../application/presenter/Presenter";
 import moment from "moment";
 

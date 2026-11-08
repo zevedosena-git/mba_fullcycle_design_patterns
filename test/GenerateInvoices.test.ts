@@ -34,7 +34,6 @@ beforeEach(() => {
 	// }
 	connection = new PgPromiseAdapter();
 	contractRepository = new ContractDatabaseRepository(connection);
-	// Requisito 6: só a montagem mudou, para a factory e o mediator. Os expects permanecem os originais.
 	generateInvoices = new GenerateInvoices(contractRepository, new PresenterFactory(), new Mediator());
 });
 
@@ -67,7 +66,6 @@ test("Deve gerar as notas fiscais por regime de competência por csv", async fun
 		type: "accrual",
 		format: "csv"
 	};
-	// Requisito 3: o construtor não recebe mais um presenter; o format "csv" do input escolhe o CsvPresenter.
 	const generateInvoices = new GenerateInvoices(contractRepository, new PresenterFactory(), new Mediator());
 	const output = await generateInvoices.execute(input);
 	expect(output).toBe("2022-01-01;500");

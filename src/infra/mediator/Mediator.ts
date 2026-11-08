@@ -1,4 +1,3 @@
-// Requisito 5: o concreto implementa a porta da aplicação. on e publish seguem como estavam.
 import MediatorPort from "../../application/mediator/Mediator";
 
 export default class Mediator implements MediatorPort {

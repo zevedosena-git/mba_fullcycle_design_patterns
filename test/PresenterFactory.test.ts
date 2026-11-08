@@ -1,4 +1,3 @@
-// Requisito 6: json, ausência de format e csv resolvem o presenter certo; valor desconhecido lança Invalid format.
 import PresenterFactory from "../src/infra/presenter/PresenterFactory";
 import CsvPresenter from "../src/infra/presenter/CsvPresenter";
 import JsonPresenter from "../src/infra/presenter/JsonPresenter";

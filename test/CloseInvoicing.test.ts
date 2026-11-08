@@ -1,8 +1,7 @@
-// Requisito 6: persistência, reprocessamento sem duplicar, CSV do fechamento,
-// format inválido antes da escrita, e rollback com o fechamento anterior intacto.
 import CloseInvoicing from "../src/application/usecase/CloseInvoicing";
 import GenerateInvoices from "../src/application/usecase/GenerateInvoices";
 import GetInvoices from "../src/application/usecase/GetInvoices";
+import Contract from "../src/domain/Contract";
 import ContractRepository from "../src/application/repository/ContractRepository";
 import InvoiceRepository from "../src/application/repository/InvoiceRepository";
 import DatabaseConnection from "../src/infra/database/DatabaseConnection";
@@ -112,12 +111,20 @@ test("Deve manter caixa e competência do mesmo mês", async function () {
 
 test("Deve desfazer o lote quando a segunda fatura viola a FK", async function () {
 	await closeInvoicing.execute({ month: 1, year: 2022, type: "accrual" });
-	await expect(invoiceRepository.replacePeriod(1, 2022, "accrual", [
-		{ idContract: contractId, date: new Date("2022-01-02T13:00:00Z"), amount: 1 },
-		{ idContract: "00000000-0000-0000-0000-000000000000", date: new Date("2022-01-03T13:00:00Z"), amount: 2 }
-	])).rejects.toThrow();
+	closed = [];
+	const failingContractRepository: ContractRepository = {
+		async list (): Promise<Contract[]> {
+			return [
+				new Contract(contractId, "Contrato do seed", 12000, 12, new Date("2022-01-01T10:00:00")),
+				new Contract("00000000-0000-0000-0000-000000000000", "Contrato inexistente", 24000, 12, new Date("2022-01-01T10:00:00"))
+			];
+		}
+	};
+	const failingCloseInvoicing = new CloseInvoicing(failingContractRepository, invoiceRepository, new PresenterFactory(), mediator);
+	await expect(failingCloseInvoicing.execute({ month: 1, year: 2022, type: "accrual" })).rejects.toThrow();
 	const stored = await invoiceRepository.listByPeriod(1, 2022, "accrual");
 	expect(stored).toEqual([{ date: new Date("2022-01-01T13:00:00.000Z"), amount: 500 }]);
+	expect(closed).toHaveLength(0);
 });
 
 test("Deve consultar o período fechado e um período vazio", async function () {

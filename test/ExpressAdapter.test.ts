@@ -1,4 +1,3 @@
-// Requisito 4: string responde texto puro e o quarto argumento traz a query string.
 import axios from "axios";
 import ExpressAdapter from "../src/infra/http/ExpressAdapter";
 

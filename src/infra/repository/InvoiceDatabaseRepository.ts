@@ -6,8 +6,6 @@ export default class InvoiceDatabaseRepository implements InvoiceRepository {
 	constructor (readonly connection: DatabaseConnection) {
 	}
 
-	// Requisito 2: uma transaction só. O delete daquele mês, ano e regime e os inserts
-	// do lote novo cometem juntos. Falha no meio preserva o fechamento anterior.
 	async replacePeriod (month: number, year: number, type: string, invoices: InvoiceEntry[]): Promise<void> {
 		await this.connection.transaction(async (tx) => {
 			await tx.query("delete from branas.invoice where month = $1 and year = $2 and type = $3", [month, year, type]);
@@ -20,7 +18,6 @@ export default class InvoiceDatabaseRepository implements InvoiceRepository {
 		});
 	}
 
-	// Requisito 4: leitura pela porta, ordenada por date crescente. Período sem linha devolve [].
 	async listByPeriod (month: number, year: number, type: string): Promise<InvoiceView[]> {
 		const invoicesData = await this.connection.query(
 			"select date, amount from branas.invoice where month = $1 and year = $2 and type = $3 order by date",

@@ -1,4 +1,3 @@
-// Requisito 2: falha no meio da transaction desfaz o insert.
 import PgPromiseAdapter from "../src/infra/database/PgPromiseAdapter";
 
 test("Deve desfazer a inserção quando a transação lança no meio", async function () {

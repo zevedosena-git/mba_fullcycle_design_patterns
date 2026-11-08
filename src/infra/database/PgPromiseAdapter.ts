@@ -12,8 +12,6 @@ export default class PgPromiseAdapter implements DatabaseConnection {
 		return this.connection.query(statement, params);
 	}
 
-	// Requisito 2: um tx do pg-promise. As queries do trabalho usam t.query,
-	// então delete e inserts do lote cometem ou desfazem juntos.
 	transaction<T>(work: (connection: DatabaseConnection) => Promise<T>): Promise<T> {
 		return this.connection.tx(async (t: any) => {
 			const transactionalConnection: DatabaseConnection = {

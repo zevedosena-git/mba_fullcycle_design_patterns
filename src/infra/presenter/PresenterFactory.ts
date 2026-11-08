@@ -1,6 +1,3 @@
-// Requisito 3: molde da InvoiceGenerationFactory.
-// Ausência ou "json" devolve JSON; "csv" devolve CSV; outro valor lança Invalid format
-// antes de o fechamento apagar ou gravar qualquer fatura.
 import PresenterFactoryPort from "../../application/presenter/PresenterFactory";
 import Presenter from "../../application/presenter/Presenter";
 import CsvPresenter from "./CsvPresenter";
